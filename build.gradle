@@ -10,6 +10,7 @@ buildscript {
     ext.kotlinx_coroutines_version = '0.22.2'
     ext.constraint_layout_version = '1.0.2'
     ext.dagger_version = '2.13'
+    ext.mockito_kotlin_version = '1.5.0'
 
     // Android
     ext.support_v4_version = '27.0.2'

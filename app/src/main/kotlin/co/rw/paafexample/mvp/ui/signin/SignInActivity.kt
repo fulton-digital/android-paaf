@@ -6,12 +6,10 @@ import co.rw.paafexample.PaafApplication
 import co.rw.paafexample.R
 import kotlinx.android.synthetic.main.activity_signin.email_sign_in_button
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.toast
 import javax.inject.Inject
 
-class SignInActivity : AppCompatActivity(), SignInView {
-
-    @Inject
-    lateinit var signInPresenter: SignInPresenter
+open class SignInActivity @Inject constructor(private val signInPresenter: SignInPresenter) : AppCompatActivity(), SignInView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,8 +20,12 @@ class SignInActivity : AppCompatActivity(), SignInView {
         signInPresenter.onAttach(this)
 
         email_sign_in_button.onClick {
-
+            sendClickEventToPresenter()
         }
+    }
+
+    open fun sendClickEventToPresenter() {
+        signInPresenter.onSignInButtonClicked()
     }
 
     override fun onResume() {
@@ -37,7 +39,7 @@ class SignInActivity : AppCompatActivity(), SignInView {
     }
 
     override fun onSignInSuccess() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        toast("Sign In Success!").show()
     }
 
 }

@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".SignInActivity"
+            android:name=".paaf.view.SignInActivity"
             android:label="@string/title_activity_signin">
         </activity>
         <activity android:name=".mvp.ui.signin.SignInActivity"/>

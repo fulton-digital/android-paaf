@@ -1,7 +1,8 @@
-package co.rw.paafexample
+package co.rw.paafexample.paaf.view
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import co.rw.paafexample.R
 import co.rw.paafexample.paaf.base.SignInAction
 import co.rw.paafexample.paaf.base.SignInClickEvent
 import co.rw.paafexample.paaf.presenter.SignInViewModel

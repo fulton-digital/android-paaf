@@ -19,6 +19,7 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+
     }
 
     compileOptions {
@@ -61,6 +62,7 @@ dependencies {
     testImplementation "junit:junit:$junit_version"
     androidTestImplementation "com.android.support.test:runner:$android_test_runner_version"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$espresso_version"
+    testCompile "com.nhaarman:mockito-kotlin:$mockito_kotlin_version"
 }
 
 kotlin {

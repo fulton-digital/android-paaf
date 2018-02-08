@@ -6,8 +6,8 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class PresenterModule {
+open class PresenterModule {
 
     @Provides
-    fun providesSignInPresenter(): SignInPresenter = SignInPresenterImpl()
+    open fun providesSignInPresenter(): SignInPresenter = SignInPresenterImpl()
 }
