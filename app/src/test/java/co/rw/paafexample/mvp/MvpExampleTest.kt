@@ -26,7 +26,6 @@ class MvpExampleTest {
 
         Mockito.`when`(signInActivity.onSignInSuccess()).then { }
 
-
         signInPresenter.onAttach(signInActivity)
         signInPresenter.onSignInButtonClicked()
 

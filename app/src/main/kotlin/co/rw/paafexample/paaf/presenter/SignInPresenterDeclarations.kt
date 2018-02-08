@@ -21,6 +21,7 @@ fun signInPresenter(clickEventChannel: ReceiveChannel<SignInClickEvent>): SignIn
                     SignInClickEvent.SignInButton -> {
                         // Do some real sign in, for the example we will just delay
                         delay(time = 1000, unit = TimeUnit.MILLISECONDS)
+                        signInActionChannel.send(SignInAction.SignInSuccessful)
                         true  // for the example we'll keep listening for clicks
                     }
                 }
