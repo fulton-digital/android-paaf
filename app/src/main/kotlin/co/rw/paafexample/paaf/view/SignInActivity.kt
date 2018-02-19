@@ -11,7 +11,6 @@ import kotlinx.android.synthetic.main.activity_signin.email_sign_in_button
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.selects.whileSelect
 import org.jetbrains.anko.sdk23.coroutines.onClick
 import org.jetbrains.anko.toast
 
@@ -38,12 +37,11 @@ class SignInActivity : AppCompatActivity() {
         viewModel = signInPresenter(clickEventChannel)
 
         launch(UI) {
-            whileSelect {
-                viewModel?.signInActionChannel?.onReceive { signInAction ->
+            viewModel?.signInActionChannel?.let {
+                for (signInAction in it) {
                     when (signInAction) {
                         SignInAction.SignInSuccessful -> {
                             toast("Sign In Success!").show()
-                            true
                         }
                     }
                 }
