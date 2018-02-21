@@ -4,7 +4,7 @@ import co.rw.paafexample.paaf.base.SignInAction
 import co.rw.paafexample.paaf.base.SignInClickEvent
 import co.rw.paafexample.paaf.presenter.signInPresenter
 import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.launch
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -14,7 +14,7 @@ class PaafExampleTest {
 
     @Test
     fun testShouldReceiveSignInActionOnSignInButtonClickEvent() {
-        runBlocking {
+        launch {
             clickEventChannel.send(SignInClickEvent.SignInButton)
 
             val action = actionChannel.receive()
