@@ -2,27 +2,30 @@ package co.rw.paafexample.paaf.presenter
 
 import co.rw.paafexample.paaf.base.SignInAction
 import co.rw.paafexample.paaf.base.SignInClickEvent
-import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-data class SignInViewModel(val signInActionChannel: ReceiveChannel<SignInAction>)
+data class SignInChannels(val signInActionChannel: ReceiveChannel<SignInAction>)
 
-fun signInPresenter(clickEventChannel: ReceiveChannel<SignInClickEvent>): SignInViewModel {
+fun CoroutineScope.signInPresenter(clickEventChannel: ReceiveChannel<SignInClickEvent>): SignInChannels {
     val signInActionChannel = Channel<SignInAction>()
 
-    launch {
-        for (signInClickEvent in clickEventChannel)
+    // We don't want our presenter running on the main thread
+    launch(Dispatchers.Default) {
+        for (signInClickEvent in clickEventChannel) {
             when (signInClickEvent) {
                 SignInClickEvent.SignInButton -> {
                     // Do some real sign in, for the example we will just delay
-                    delay(time = 1000, unit = TimeUnit.MILLISECONDS)
+                    delay(timeMillis = 1000)
                     signInActionChannel.send(SignInAction.SignInSuccessful)
                 }
             }
+        }
     }
 
-    return SignInViewModel(signInActionChannel)
+    return SignInChannels(signInActionChannel)
 }

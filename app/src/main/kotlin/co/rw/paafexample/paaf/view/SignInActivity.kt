@@ -5,22 +5,19 @@ import android.support.v7.app.AppCompatActivity
 import co.rw.paafexample.R
 import co.rw.paafexample.paaf.base.SignInAction
 import co.rw.paafexample.paaf.base.SignInClickEvent
-import co.rw.paafexample.paaf.presenter.SignInViewModel
 import co.rw.paafexample.paaf.presenter.signInPresenter
-import kotlinx.android.synthetic.main.activity_signin.email_sign_in_button
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.launch
+import kotlinx.android.synthetic.main.activity_signin.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import org.jetbrains.anko.sdk23.coroutines.onClick
 import org.jetbrains.anko.toast
 
 /**
  * A login screen that offers login via email/password.
  */
-class SignInActivity : AppCompatActivity() {
-
-    private val clickEventChannel = Channel<SignInClickEvent>()
-    private var viewModel: SignInViewModel? = null
+@ExperimentalCoroutinesApi
+class SignInActivity() : AppCompatActivity(), CoroutineScope by MainScope() {
+    private val clickEventChannel = Channel<SignInClickEvent>(capacity = Channel.CONFLATED)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,10 +31,8 @@ class SignInActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        viewModel = signInPresenter(clickEventChannel)
-
-        launch(UI) {
-            viewModel?.signInActionChannel?.let {
+        launch {
+            signInPresenter(clickEventChannel).signInActionChannel.let {
                 for (signInAction in it) {
                     when (signInAction) {
                         SignInAction.SignInSuccessful -> {
@@ -51,6 +46,6 @@ class SignInActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        viewModel = null
+        cancel()  // CoroutineScope.cancel
     }
 }
