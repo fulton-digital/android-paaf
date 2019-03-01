@@ -15,7 +15,7 @@ fun CoroutineScope.signInPresenter(clickEventChannel: ReceiveChannel<SignInClick
     val signInActionChannel = Channel<SignInAction>()
 
     // We don't want our presenter running on the main thread
-    launch(Dispatchers.Default) {
+    launch(Dispatchers.IO) {
         for (signInClickEvent in clickEventChannel) {
             when (signInClickEvent) {
                 SignInClickEvent.SignInButton -> {

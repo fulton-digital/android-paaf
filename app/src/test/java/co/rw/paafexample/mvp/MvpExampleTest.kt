@@ -2,7 +2,7 @@ package co.rw.paafexample.mvp
 
 import co.rw.paafexample.mvp.ui.signin.SignInActivity
 import co.rw.paafexample.mvp.ui.signin.SignInPresenterImpl
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockitokotlin2.verify
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock

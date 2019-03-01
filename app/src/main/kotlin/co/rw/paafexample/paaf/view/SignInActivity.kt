@@ -11,19 +11,23 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import org.jetbrains.anko.sdk23.coroutines.onClick
 import org.jetbrains.anko.toast
+import kotlin.coroutines.CoroutineContext
 
 /**
  * A login screen that offers login via email/password.
  */
-@ExperimentalCoroutinesApi
-class SignInActivity() : AppCompatActivity(), CoroutineScope by MainScope() {
-    private val clickEventChannel = Channel<SignInClickEvent>(capacity = Channel.CONFLATED)
+class SignInActivity() : AppCompatActivity(), CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() = SupervisorJob() + Dispatchers.Main
+
+    private val clickEventChannel = Channel<SignInClickEvent>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signin)
 
-        email_sign_in_button.onClick {
+        email_sign_in_button.onClick(coroutineContext) {
             clickEventChannel.send(SignInClickEvent.SignInButton)
         }
     }
@@ -33,12 +37,15 @@ class SignInActivity() : AppCompatActivity(), CoroutineScope by MainScope() {
 
         launch {
             signInPresenter(clickEventChannel).signInActionChannel.let {
+                var counter =1
                 for (signInAction in it) {
                     when (signInAction) {
                         SignInAction.SignInSuccessful -> {
-                            toast("Sign In Success!").show()
+                            toast("Sign In Success! counter $counter").show()
                         }
                     }
+
+                    counter++
                 }
             }
         }
@@ -46,6 +53,6 @@ class SignInActivity() : AppCompatActivity(), CoroutineScope by MainScope() {
 
     override fun onPause() {
         super.onPause()
-        cancel()  // CoroutineScope.cancel
+        coroutineContext.cancel()  // CoroutineScope.cancel
     }
 }
