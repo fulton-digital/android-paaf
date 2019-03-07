@@ -58,8 +58,10 @@ Let's take a look at an updated version utilizing `CoroutineScope`. This will al
 ```kotlin
 class SignInActivity() : AppCompatActivity(), CoroutineScope {
 
+    private lateinit var job: Job
+
     override val coroutineContext: CoroutineContext
-        get() = SupervisorJob() + Dispatchers.Main
+        get() = job + Dispatchers.Main
 
     private val clickEventChannel = Channel<SignInClickEvent>()
 
@@ -67,7 +69,9 @@ class SignInActivity() : AppCompatActivity(), CoroutineScope {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signin)
 
-        email_sign_in_button.onClick(coroutineContext) {
+        job = SupervisorJob()
+
+        email_sign_in_button.onClick {
             clickEventChannel.send(SignInClickEvent.SignInButton)
         }
     }
@@ -80,7 +84,8 @@ class SignInActivity() : AppCompatActivity(), CoroutineScope {
                 for (signInAction in it) {
                     when (signInAction) {
                         SignInAction.SignInSuccessful -> {
-                            toast("Sign In Success!").show()
+                            Toast.makeText(this@SignInActivity, "Sign In Success!", Toast.LENGTH_SHORT)
+                                    .show()
                         }
                     }
                 }
@@ -90,14 +95,14 @@ class SignInActivity() : AppCompatActivity(), CoroutineScope {
 
     override fun onPause() {
         super.onPause()
-        coroutineContext.cancel()  // CoroutineScope.cancel
+        coroutineContext.cancelChildren()
     }
 }
 ```
 
 There are a few items of note in this new example. First, our `SignInActivity` is now implementing `CoroutineScope`.  Because of this, we now need to override `coroutineContext` in order to provide a coroutineContext for our activity.
 
-We can now take advantage of calls to coroutine builders such as `launch` which will automatically use the proper coroutine context. Further there is now a cascading effect on our presenter functions. Any function that utilizes these builders will all be tracked together via one coroutine context.
+We can now take advantage of calls to coroutine builders such as `launch` which will automatically use the proper coroutine scope. Further there is now a cascading effect on our presenter functions. Any function that utilizes these builders will all be tracked together via one coroutine scope.
 
 Let's take a look at our updated presenter function:
 

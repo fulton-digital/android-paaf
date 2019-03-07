@@ -2,15 +2,20 @@ package co.rw.paafexample.paaf.view
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.widget.Toast
 import co.rw.paafexample.R
 import co.rw.paafexample.paaf.base.SignInAction
 import co.rw.paafexample.paaf.base.SignInClickEvent
 import co.rw.paafexample.paaf.presenter.signInPresenter
 import kotlinx.android.synthetic.main.activity_signin.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.sdk23.coroutines.onClick
-import org.jetbrains.anko.toast
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -18,8 +23,10 @@ import kotlin.coroutines.CoroutineContext
  */
 class SignInActivity() : AppCompatActivity(), CoroutineScope {
 
+    private lateinit var job: Job
+
     override val coroutineContext: CoroutineContext
-        get() = SupervisorJob() + Dispatchers.Main
+        get() = job + Dispatchers.Main
 
     private val clickEventChannel = Channel<SignInClickEvent>()
 
@@ -27,7 +34,9 @@ class SignInActivity() : AppCompatActivity(), CoroutineScope {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signin)
 
-        email_sign_in_button.onClick(coroutineContext) {
+        job = SupervisorJob()
+
+        email_sign_in_button.onClick {
             clickEventChannel.send(SignInClickEvent.SignInButton)
         }
     }
@@ -37,15 +46,13 @@ class SignInActivity() : AppCompatActivity(), CoroutineScope {
 
         launch {
             signInPresenter(clickEventChannel).signInActionChannel.let {
-                var counter =1
                 for (signInAction in it) {
                     when (signInAction) {
                         SignInAction.SignInSuccessful -> {
-                            toast("Sign In Success! counter $counter").show()
+                            Toast.makeText(this@SignInActivity, "Sign In Success!", Toast.LENGTH_SHORT)
+                                    .show()
                         }
                     }
-
-                    counter++
                 }
             }
         }
@@ -53,6 +60,6 @@ class SignInActivity() : AppCompatActivity(), CoroutineScope {
 
     override fun onPause() {
         super.onPause()
-        coroutineContext.cancel()  // CoroutineScope.cancel
+        coroutineContext.cancelChildren()
     }
 }
